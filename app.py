@@ -4,8 +4,10 @@ import os
 
 app = Flask(__name__)
 
+
 def get_conn():
 	return psycopg2.connect(os.environ["DATABASE_URL"], sslmode="require")
+
 
 @app.route("/image")
 def get_image():
@@ -15,6 +17,7 @@ def get_image():
 	url = cur.fetchone()[0]
 	conn.close()
 	return redirect(url, code=302)
+
 
 @app.route("/admin/update", methods=["POST"])
 def update_image():
@@ -28,3 +31,9 @@ def update_image():
 	conn.close()
 
 	return {"status": "ok", "image_url": url}
+
+
+# sleepさせないためのバッファAPI
+@app.route("/")
+def home():
+	return "HOME"
