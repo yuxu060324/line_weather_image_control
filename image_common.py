@@ -1,17 +1,21 @@
 import os
-from datetime import datetime
-from common_global import *
+import datetime
+# from common_global import *
 
 try:
 	import urlparse
 except ImportError:
 	import urllib.parse as urlparse
 
+HOME_ABSPATH = os.path.dirname(os.path.abspath(__file__))
+GITHUB_PROJECT_CONTENT_PATH = "https://raw.githubusercontent.com/yuxu060324/FlexMessage/master/"
+RENDER_PROJECT_URL = "https://lineplanbotyamanaka.onrender.com/"
+
 DAY_OF_WEEK_LIST = ["月", "火", "水", "木", "金", "土", "日"]
 
 message_template_folder_name = "TemplateMessage"
 
-icon_folder_name = "image/"
+icon_folder_name = "images/"
 event_icon_folder_name = "event/"
 weather_icon_folder_name = "weather/"
 output_folder_name = "out/"
@@ -51,6 +55,10 @@ HEADER_BACK_COLOR = "#0367D3"
 # Hero
 # -------------------------------
 
+OUTPUT_FILE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "image", "out")
+FONT_FILE_PATH_MEIRYO = os.path.join(HOME_ABSPATH, "Font", "meiryo.ttc")
+WEATHER_CODE_LIST_FILE_NAME = os.path.join(HOME_ABSPATH, "jsons", weather_code_list_file_name)
+
 WEATHER_PATH = os.path.join(HOME_ABSPATH, icon_folder_name, weather_icon_folder_name)		# 天気の画像が保存されているPATH
 OUT_DEFAULT_WEATHER_IMAGE_FILE_NAME = "out_weather_image_default.png"						# エラー時に返す天気画像のファイル名
 
@@ -89,7 +97,6 @@ WEATHER_CODE = {
 	"5": "thunder"
 }
 
-WEATHER_CODE_LIST_FILE_NAME = os.path.join(HOME_ABSPATH, icon_folder_name, weather_icon_folder_name, weather_code_list_file_name)
 OUT_FOLDER_PATH = os.path.join(HOME_ABSPATH, icon_folder_name, output_folder_name)
 
 HERO_SIZE = (480, 270)
