@@ -8,7 +8,7 @@ try:
 except ImportError:
 	import urllib.parse as urlparse
 
-RUN_ENV = "LOCAL"
+RUN_ENV = "RENDER"
 HOME_ABSPATH = os.path.dirname(os.path.abspath(__file__))
 log_file_name = "project"
 
