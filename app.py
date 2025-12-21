@@ -1,10 +1,10 @@
-import base64
-import io
+import os
 import sqlite3
 
 from flask import Flask, send_file, jsonify
 from datetime import datetime
 
+from image_common import *
 from create_weather_image import create_weather_image
 
 app = Flask(__name__)
@@ -15,11 +15,10 @@ def init_db():
 	conn = sqlite3.connect(DB_PATH)
 	cur = conn.cursor()
 	cur.execute("""
-		CREATE TABLE IF NOT EXISTS latest_image (
-			id INTEGER PRIMARY KEY,
-			filename TEXT,
-			image_base64 TEXT
-			)
+	    CREATE TABLE IF NOT EXISTS latest_image (
+	        id INTEGER PRIMARY KEY,
+	        filename TEXT
+	    )
 	""")
 	cur.execute("""
 		INSERT OR IGNORE INTO latest_image (id, filename, image_base64)
@@ -28,41 +27,48 @@ def init_db():
 	conn.commit()
 	conn.close()
 
+
 init_db()
-
-
-# def get_conn():
-# 	return psycopg2.connect(os.environ["DATABASE_URL"], sslmode="require")
-
-
 
 
 @app.route("/image")
 def get_image():
-	# conn = get_conn()
-	# cur = conn.cursor()
-	# cur.execute("SELECT url FROM latest_image LIMIT 1")
-	# url = cur.fetchone()[0]
-	# conn.close()
-	# return redirect(url, code=302)
+	conn = sqlite3.connect(DB_PATH)
+	cur = conn.cursor()
+	cur.execute("SELECT filename FROM latest_image WHERE id = 1")
+	row = cur.fetchone()
+	conn.close()
 
-	return "VIEW_IMAGE"
+	if not row or not row[0]:
+		return "image not found", 404
+
+	file_path = os.path.join(OUTPUT_FILE_PATH, row[0])
+
+	if not os.path.exists(file_path):
+		return "image file missing (service restarted)", 404
+
+	return send_file(file_path, mimetype="image/png")
 
 
 @app.route("/admin/update", methods=["POST"])
 def update_image():
-	# data = request.json
-	# url = data["url"]
-	#
-	# conn = get_conn()
-	# cur = conn.cursor()
-	# cur.execute("UPDATE latest_image SET url=%s WHERE id=1", (url,))
-	# conn.commit()
-	# conn.close()
-	#
-	# return {"status": "ok", "image_url": url}
 
-	return "UPDATE_IMAGE"
+	filename = create_weather_image(place_code="130000")
+	file_path = os.path.join(OUTPUT_FILE_PATH, filename)
+
+	conn = sqlite3.connect(DB_PATH)
+	cur = conn.cursor()
+	cur.execute(
+		"UPDATE latest_image SET filename = ? WHERE id = 1",
+		(filename,)
+	)
+	conn.commit()
+	conn.close()
+
+	return jsonify({
+		"status": "ok",
+		"filename": filename
+	})
 
 
 # sleepさせないためのバッファAPI
@@ -73,5 +79,5 @@ def home():
 
 # ---------- Render 用 ----------
 if __name__ == "__main__":
-	app.run()
+	app.run(debug=True)
 
