@@ -15,14 +15,14 @@ def init_db():
 	conn = sqlite3.connect(DB_PATH)
 	cur = conn.cursor()
 	cur.execute("""
-	    CREATE TABLE IF NOT EXISTS latest_image (
-	        id INTEGER PRIMARY KEY,
-	        filename TEXT
-	    )
+		CREATE TABLE IF NOT EXISTS latest_image (
+			id INTEGER PRIMARY KEY,
+			filename TEXT
+		)
 	""")
 	cur.execute("""
-		INSERT OR IGNORE INTO latest_image (id, filename, image_base64)
-		VALUES (1, '', '')
+		INSERT OR IGNORE INTO latest_image (id, filename)
+		VALUES (1, '')
 	""")
 	conn.commit()
 	conn.close()
