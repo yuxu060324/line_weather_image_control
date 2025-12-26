@@ -59,6 +59,7 @@ WEATHER_CODE = {
 }
 
 OUT_FOLDER_PATH = os.path.join(HOME_ABSPATH, icon_folder_name, output_folder_name)
+OUT_DEFAULT_WEATHER_IMAGE_PATH = os.path.join(WEATHER_PATH, OUT_DEFAULT_WEATHER_IMAGE_FILE_NAME)
 
 HERO_SIZE = (480, 270)
 

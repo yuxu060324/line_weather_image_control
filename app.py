@@ -40,12 +40,12 @@ def get_image():
 	conn.close()
 
 	if not row or not row[0]:
-		return "image not found", 404
+		return send_file(OUT_DEFAULT_WEATHER_IMAGE_PATH, mimetype="image/png")
 
 	file_path = os.path.join(OUTPUT_FILE_PATH, row[0])
 
 	if not os.path.exists(file_path):
-		return "image file missing (service restarted)", 404
+		return send_file(OUT_DEFAULT_WEATHER_IMAGE_PATH, mimetype="image/png")
 
 	return send_file(file_path, mimetype="image/png")
 
@@ -54,7 +54,6 @@ def get_image():
 def update_image():
 
 	filename = create_weather_image(place_code="130000")
-	file_path = os.path.join(OUTPUT_FILE_PATH, filename)
 
 	conn = sqlite3.connect(DB_PATH)
 	cur = conn.cursor()
