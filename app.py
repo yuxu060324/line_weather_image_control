@@ -5,6 +5,7 @@ from flask import Flask, send_file, jsonify
 from datetime import datetime
 
 from image_common import *
+from common_global import *
 from create_weather_image import create_weather_image
 
 app = Flask(__name__)
@@ -31,8 +32,8 @@ def init_db():
 init_db()
 
 
-@app.route("/image")
-def get_image():
+@app.route("/get_image_filename")
+def get_image_filename():
 	conn = sqlite3.connect(DB_PATH)
 	cur = conn.cursor()
 	cur.execute("SELECT filename FROM latest_image WHERE id = 1")
@@ -40,10 +41,24 @@ def get_image():
 	conn.close()
 
 	if not row or not row[0]:
-		return send_file(OUT_DEFAULT_WEATHER_IMAGE_PATH, mimetype="image/png")
+		logger.warning(f'データベースに値が登録されていないです: {row[0]}')
+		return OUT_DEFAULT_WEATHER_IMAGE_FILE_NAME
 
 	file_path = os.path.join(OUTPUT_FILE_PATH, row[0])
+	logger.debug(f'filename: {row[0]}')
 
+	if not os.path.exists(file_path):
+		logger.warning(f'ファイルが存在しません: {file_path}')
+		return OUT_DEFAULT_WEATHER_IMAGE_FILE_NAME
+
+	return row[0]
+
+
+@app.route("/image/<filename>")
+def get_image(filename):
+	file_path = os.path.join(OUTPUT_FILE_PATH, filename)
+
+	# 画像がない場合は、サンプル画像を返却する
 	if not os.path.exists(file_path):
 		return send_file(OUT_DEFAULT_WEATHER_IMAGE_PATH, mimetype="image/png")
 
@@ -63,6 +78,8 @@ def update_image():
 	)
 	conn.commit()
 	conn.close()
+
+	logger.debug(f'saved filename: {filename}')
 
 	return jsonify({
 		"status": "ok",
