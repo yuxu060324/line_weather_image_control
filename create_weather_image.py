@@ -45,7 +45,7 @@ def _save_image(img: Image, name):
 	image_path = os.path.join(OUTPUT_FILE_PATH, name + ".png")
 
 	img.save(image_path, quality=95)
-	img.close()			# 明示的にクローズ
+	# img.close()			# 明示的にクローズ
 
 	# # ファイルの存在確認
 	# for _ in range(3):
@@ -87,8 +87,9 @@ def _create_weather_icon_only(weather_before=None):
 
 	img = _match_image(base_img=img, paste_img=weather_img_before, position=before_position)
 
-	# # 画像の保存
-	# save_image(img, name="weather_forecast_map")
+	# if __debug__:
+	# 	# 画像の保存
+	# 	save_image(img, name="weather_forecast_map")
 
 	logger.info("Finished create to weather_icon(Only)")
 
@@ -133,8 +134,9 @@ def _create_weather_icon_often(weather_before=None, weather_after=None):
 	img = _match_image(base_img=img, paste_img=weather_img_before, position=before_position)
 	img = _match_image(base_img=img, paste_img=weather_img_after, position=after_position)
 
-	# # 画像の保存
-	# save_image(img, name="weather_forecast_map")
+	# if __debug__:
+	# 	# 画像の保存
+	# 	save_image(img, name="weather_forecast_map")
 
 	logger.info("Finished create to weather_icon(often)")
 
@@ -179,8 +181,9 @@ def _create_weather_icon_after(weather_before=None, weather_after=None):
 	img = _match_image(base_img=img, paste_img=weather_img_before, position=before_position)
 	img = _match_image(base_img=img, paste_img=weather_img_after, position=after_position)
 
-	# # 画像の保存
-	# save_image(img, name="weather_forecast_map")
+	# if __debug__:
+	# 	# 画像の保存
+	# 	save_image(img, name="weather_forecast_map")
 
 	logger.info("Finished create to weather_icon(after)")
 
@@ -284,6 +287,10 @@ def _create_weather_icon(jma_weather_code=None):
 
 	logger.info("Finished create_weather_icon")
 
+	if __debug__:
+		# 画像の保存
+		_save_image(img=weather_icon, name="weather_icon")
+
 	return weather_icon
 
 
@@ -316,15 +323,15 @@ def _create_detail_weather(weather_detail: str, get_date: datetime.datetime):
 	font_date = ImageFont.truetype(FONT_FILE_PATH_MEIRYO, 8)
 	draw.text(
 		xy=get_date_position,
-		text=get_date.strftime("%Y年%m月%d日 %H:%M:%S"),
+		text=get_date.strftime("%Y年%m月%d日 %H:%M:%S%Z"),
 		fill="black",
 		font=font_date,
 		anchor="rd"
 	)
 
-	# # 画像の保存
-	# if os.environ.get("SET_BUILD") == "LOCAL" or os.environ.get("SET_BUILD") == "LOCAL_INSTALLED":
-	# 	save_image(img, name="detail_weather")
+	if __debug__:
+		# 画像の保存
+		_save_image(img, name="detail_weather")
 
 	logger.debug("Finished create_detail_weather()")
 
@@ -376,9 +383,9 @@ def _create_temperature_icon(temperature_list: list):
 		anchor="mm"
 	)
 
-	# # 画像の保存
-	# if os.environ.get("SET_BUILD") == "LOCAL" or os.environ.get("SET_BUILD") == "LOCAL_INSTALLED":
-	# 	save_image(img, name="temperature_icon")
+	if __debug__:
+		# 画像の保存
+		_save_image(img, name="temperature_icon")
 
 	logger.debug("Finished create_temperature_icon()")
 
@@ -388,7 +395,7 @@ def _create_temperature_icon(temperature_list: list):
 def create_weather_image(place_code: str = "130000"):
 
 	# 表示する画像のURL
-	now_date = datetime.datetime.now()
+	now_date = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
 	output_file_path = out_file_name_hero + str(now_date.strftime("%Y%m%d%H%M%S"))
 
 	# 気象庁のAPIから東京都のjsonデータを取得
@@ -449,11 +456,3 @@ def create_weather_image(place_code: str = "130000"):
 		return None
 
 	return output_file_path + ".png"
-
-
-# デバッグ用
-if __name__ == "__main__":
-	file_path = create_weather_image(place_code="130000")
-	print(f'IMAGE_PATH: {file_path}')
-
-
