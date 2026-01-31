@@ -1,2 +1,5 @@
 /static/
 /log/
+./makefile
+./main.py
+
